@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Precificação</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">Calculadora de Precificação</div>
+        <button class="navbar-toggle" onclick="toggleMenu()">☰</button>
+        <ul class="navbar-menu" id="navbarMenu">
+            <li><a href="#">Início</a></li>
+            <li><a href="#">Sobre</a></li>
+            <li><a href="#">Contato</a></li>
+        </ul>
+    </nav>
+
+    <!-- Calculadora -->
+    <div class="calculator">
+        <h1>Calculadora de Precificação</h1>
+
+        <!-- Botão para alternar modo escuro/claro -->
+        <button id="toggleModo">🌙 Alternar Modo</button>
+
+        <!-- Custo e Preço de Venda -->
+        <div class="input-group">
+            <input type="number" id="custo" placeholder=" " required>
+            <label for="custo">Custo do Produto (R$):</label>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="precoVenda" placeholder=" " required>
+            <label for="precoVenda">Preço de Venda (R$):</label>
+        </div>
+
+        <!-- Deduções -->
+        <h2>Deduções</h2>
+
+        <div class="input-group">
+            <input type="number" id="impostos" placeholder=" ">
+            <label for="impostos">Impostos (%):</label>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="taxaCartao" placeholder=" ">
+            <label for="taxaCartao">Taxa de Cartão (%):</label>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="comissaoPlataforma" placeholder=" ">
+            <label for="comissaoPlataforma">Comissão da Plataforma (%):</label>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="marketing" placeholder=" ">
+            <label for="marketing">Marketing (%):</label>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="comissaoVendedor" placeholder=" ">
+            <label for="comissaoVendedor">Comissão do Vendedor (%):</label>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="outrasDeducoes" placeholder=" ">
+            <label for="outrasDeducoes">Outras Deduções (%):</label>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="custoVenda" placeholder=" ">
+            <label for="custoVenda">Custo de Venda (R$):</label>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="embalagem" placeholder=" ">
+            <label for="embalagem">Embalagem (R$):</label>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="frete" placeholder=" ">
+            <label for="frete">Custo de Frete (R$):</label>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="outrosInsumos" placeholder=" ">
+            <label for="outrosInsumos">Outros Insumos (R$):</label>
+        </div>
+
+        <!-- Botão de cálculo -->
+        <button onclick="calcularPreco()">Calcular</button>
+
+        <!-- Resultado em Cards -->
+        <div class="cards-container">
+            <div class="card">
+                <span class="card-icon">💰</span>
+                <h3>Preço de Venda</h3>
+                <p id="precoVendaResultado" data-tooltip="Valor final do produto após deduções.">R$ 0,00</p>
+            </div>
+            <div class="card">
+                <span class="card-icon">📈</span>
+                <h3>Lucro Bruto</h3>
+                <p id="lucroBrutoResultado" data-tooltip="Diferença entre o preço de venda e o custo do produto.">R$ 0,00</p>
+            </div>
+            <div class="card">
+                <span class="card-icon">📉</span>
+                <h3>Deduções Totais</h3>
+                <p id="deducoesResultado" data-tooltip="Soma de todas as deduções e despesas.">R$ 0,00</p>
+            </div>
+            <div class="card">
+                <span class="card-icon">💡</span>
+                <h3>Margem de Contribuição</h3>
+                <p id="margemContribuicaoResultado" data-tooltip="Valor que sobra após deduzir custos e despesas.">R$ 0,00</p>
+            </div>
+        </div>
+
+        <!-- Barra de Progresso -->
+        <div class="progress-container">
+            <h3>Progresso para Margem Mínima</h3>
+            <div class="progress-bar">
+                <div id="progressoMargem" class="progress"></div>
+            </div>
+            <p id="textoProgresso">0%</p>
+            <div id="avisoProgresso"></div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="grafico-container">
+            <canvas id="graficoGastosLucro"></canvas>
+        </div>
+        <div class="grafico-container">
+            <canvas id="graficoDeducoes"></canvas>
+        </div>
+
+        <!-- Explicação -->
+        <div id="explicacao">
+            <h3>O que é Margem de Contribuição?</h3>
+            <p>
+                A <strong>Margem de Contribuição</strong> é o valor que sobra da receita após deduzir os custos variáveis e despesas. Ela representa quanto cada produto contribui para cobrir os custos fixos e gerar lucro.
+                <br><br>
+                <strong>Fórmula:</strong> Margem de Contribuição = Preço de Venda - Custo do Produto - Deduções Totais
+            </p>
+        </div>
+    </div>
+
+    <!-- Notificação -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Loading -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js');
+        }
+    </script>
+</body>
+</html>
